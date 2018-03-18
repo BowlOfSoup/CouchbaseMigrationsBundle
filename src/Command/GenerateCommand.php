@@ -27,7 +27,7 @@ class GenerateCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('couchbase:migration:generate')
+            ->setName('couchbase:migrations:generate')
             ->setDescription('Generate a blank couchbase migration.');
     }
 

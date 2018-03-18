@@ -14,7 +14,7 @@ use Symfony\Component\Finder\Finder;
 
 class MigrateCommand extends Command
 {
-    const DOCUMENT_VERSIONS = 'migration::versions';
+    const DOCUMENT_VERSIONS = 'migrations::versions';
 
     /** @var string */
     private $migrationsDirectory;
@@ -45,7 +45,7 @@ class MigrateCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('couchbase:migration:migrate')
+            ->setName('couchbase:migrations:migrate')
             ->setDescription('Executes Couchbase migrations.');
     }
 

@@ -35,7 +35,7 @@ class ExecuteCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('couchbase:migration:execute')
+            ->setName('couchbase:migrations:execute')
             ->setDescription('Executes a single Couchbase migration.')
             ->addArgument(static::INPUT_VERSION, InputArgument::REQUIRED, 'Which version do you want to execute?');
     }

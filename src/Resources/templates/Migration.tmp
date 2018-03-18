@@ -1,0 +1,10 @@
+<?php
+
+use BowlOfSoup\CouchbaseMigrationsBundle\Migration\AbstractMigration;
+
+class Version%version% extends AbstractMigration
+{
+    public function up()
+    {
+    }
+}

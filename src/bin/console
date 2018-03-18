@@ -1,0 +1,31 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__ . '/../../vendor/autoload.php';
+
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Config\Exception\FileLocatorFileNotFoundException;
+use Symfony\Component\Console\Application;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
+$containerBuilder = new ContainerBuilder();
+$loader = new YamlFileLoader($containerBuilder, new FileLocator(__DIR__));
+
+try {
+    $loader->load('../app/parameters.yml');
+} catch (FileLocatorFileNotFoundException $e) {
+    echo PHP_EOL . 'Error: You should create a parameters.yml file in the %project_dir%/app directory.' . PHP_EOL;
+
+    exit;
+}
+
+$loader->load('../Resources/config/services.yml');
+
+$application = new Application();
+
+$application->add($containerBuilder->get('BowlOfSoup\CouchbaseMigrationsBundle\Command\ExecuteCommand'));
+$application->add($containerBuilder->get('BowlOfSoup\CouchbaseMigrationsBundle\Command\GenerateCommand'));
+$application->add($containerBuilder->get('BowlOfSoup\CouchbaseMigrationsBundle\Command\MigrateCommand'));
+
+$application->run();

@@ -1,0 +1,36 @@
+services:
+    BowlOfSoup\CouchbaseMigrationsBundle\Command\ExecuteCommand:
+      class: BowlOfSoup\CouchbaseMigrationsBundle\Command\ExecuteCommand
+      arguments:
+        - %kernel.project_dir%
+        - '@BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory'
+      tags:
+        - { name: 'console.command' }
+
+    BowlOfSoup\CouchbaseMigrationsBundle\Command\GenerateCommand:
+      class: BowlOfSoup\CouchbaseMigrationsBundle\Command\GenerateCommand
+      arguments:
+        - %kernel.project_dir%
+      tags:
+        - { name: 'console.command' }
+
+    BowlOfSoup\CouchbaseMigrationsBundle\Command\MigrateCommand:
+      class: BowlOfSoup\CouchbaseMigrationsBundle\Command\MigrateCommand
+      arguments:
+        - %kernel.project_dir%
+        - %couchbase_migration.bucket_migrations%
+        - '@BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory'
+      tags:
+        - { name: 'console.command' }
+
+    BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory:
+      class: BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory
+      arguments:
+        - '@BowlOfSoup\CouchbaseMigrationsBundle\Model\ConnectionSettings'
+
+    BowlOfSoup\CouchbaseMigrationsBundle\Model\ConnectionSettings:
+      class: BowlOfSoup\CouchbaseMigrationsBundle\Model\ConnectionSettings
+      arguments:
+        - %couchbase_migration.host%
+        - %couchbase_migration.user%
+        - %couchbase_migration.password%

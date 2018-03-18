@@ -7,7 +7,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-class CouchbaseMigrationExtension extends Extension
+class CouchbaseMigrationsExtension extends Extension
 {
     /**
      * @param array $configs

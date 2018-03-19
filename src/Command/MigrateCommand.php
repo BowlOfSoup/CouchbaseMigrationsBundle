@@ -74,7 +74,7 @@ class MigrateCommand extends Command
             ->files()
             ->in($this->migrationsDirectory)
             ->depth('== 0')
-            ->name('*.php');
+            ->name('Version*.php');
 
         if (!$finder->hasResults()) {
             $io->warning('Nothing to execute.');

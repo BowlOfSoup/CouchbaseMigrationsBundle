@@ -239,7 +239,6 @@ return Config::create('BowlOfSoup', 'BowlOfSoup coding standards')
         // additionally, @see https://github.com/FriendsOfPHP/PHP-CS-Fixer/blob/master/README.rst
         'concat_space' => array('spacing' => 'one'),
         'array_syntax' => array('syntax' => 'short'),
-        'binary_operator_spaces' => false,
         'blank_line_after_opening_tag' => true,
         'no_blank_lines_before_namespace' => false,
         'ordered_imports' => true,

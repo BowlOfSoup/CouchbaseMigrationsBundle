@@ -64,7 +64,7 @@ class ExecuteCommand extends Command
         $fileName = 'Version' . $input->getArgument(static::INPUT_VERSION) . '.php';
 
         $finder = new Finder();
-        $finder->files()->in($this->migrationsDirectory)->name($fileName);
+        $finder->files()->in($this->migrationsDirectory)->depth('== 0')->name($fileName);
 
         if (!$finder->hasResults()) {
             $io->error(sprintf('Migration: %s does not exist in %s.', $fileName, $this->migrationsDirectory));

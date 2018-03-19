@@ -47,6 +47,6 @@ class GenerateCommand extends Command
         $file =  '/Version' . $version . '.php';
         file_put_contents($this->migrationsDirectory . $file, $code);
 
-        $output->writeln(sprintf('Generated new migration to "<info>%s</info>"', static::DIRECTORY_MIGRATIONS . $file));
+        $output->writeln(PHP_EOL . sprintf('Generated new migration to "<info>%s</info>"', static::DIRECTORY_MIGRATIONS . $file). PHP_EOL);
     }
 }

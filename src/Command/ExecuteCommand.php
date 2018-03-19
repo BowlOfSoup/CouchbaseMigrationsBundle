@@ -8,6 +8,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
 
 class ExecuteCommand extends Command
@@ -23,17 +24,24 @@ class ExecuteCommand extends Command
     /**
      * @param string $projectDirectory
      * @param \BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory $clusterFactory
+     *
+     * @throws \Symfony\Component\Console\Exception\LogicException
      */
     public function __construct(
         string $projectDirectory,
         ClusterFactory $clusterFactory
-    ) {
+    )
+    {
         $this->migrationsDirectory = $projectDirectory . GenerateCommand::DIRECTORY_MIGRATIONS;
         $this->clusterFactory = $clusterFactory;
 
         parent::__construct();
     }
 
+    /**
+     * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
+     * @throws \Symfony\Component\Console\Exception\LogicException
+     */
     protected function configure()
     {
         $this
@@ -51,12 +59,14 @@ class ExecuteCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $fileName = 'Version' . $input->getArgument(static::INPUT_VERSION).'.php';
+        $io = new SymfonyStyle($input, $output);
+        $fileName = 'Version' . $input->getArgument(static::INPUT_VERSION) . '.php';
         $finder = new Finder();
         $finder->files()->in($this->migrationsDirectory)->name($fileName);
 
-        if(count($finder) !== 1) {
-            throw new \InvalidArgumentException(sprintf('Migration: %s does not exist in %s.', $fileName, $this->migrationsDirectory));
+        if (!$finder->hasResults()) {
+            $io->error(sprintf('Migration: %s does not exist in %s.', $fileName, $this->migrationsDirectory));
+            return;
         }
 
         $migrationFactory = new MigrationFactory($this->clusterFactory);
@@ -64,5 +74,7 @@ class ExecuteCommand extends Command
         $iterator->rewind();
         $migration = $migrationFactory->createByFile($iterator->current());
         $migration->up();
+
+        $io->success('Migration done.');
     }
 }

@@ -3,6 +3,7 @@
 namespace BowlOfSoup\CouchbaseMigrationsBundle\Factory;
 
 use BowlOfSoup\CouchbaseMigrationsBundle\Exception\BucketNoAccessException;
+use Couchbase\Bucket;
 use Couchbase\Exception;
 
 class BucketFactory
@@ -41,7 +42,7 @@ class BucketFactory
      *
      * @throws \BowlOfSoup\CouchbaseMigrationsBundle\Exception\BucketNoAccessException
      */
-    public function getBucket()
+    public function getBucket(): Bucket
     {
         if (null !== $this->bucket) {
             return $this->bucket;

@@ -11,6 +11,7 @@ use Couchbase\Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
 
 class MigrateCommand extends Command
@@ -30,6 +31,8 @@ class MigrateCommand extends Command
      * @param string $projectDirectory
      * @param string $migrationsBucket
      * @param \BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory $clusterFactory
+     *
+     * @throws \Symfony\Component\Console\Exception\LogicException
      */
     public function __construct(
         string $projectDirectory,
@@ -43,6 +46,9 @@ class MigrateCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
+     */
     protected function configure()
     {
         $this
@@ -56,11 +62,20 @@ class MigrateCommand extends Command
      *
      * @throws \BowlOfSoup\CouchbaseMigrationsBundle\Exception\BucketNoAccessException
      * @throws \InvalidArgumentException
+     * @throws \LogicException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
         $finder = new Finder();
         $finder->files()->in($this->migrationsDirectory);
+
+        if (!$finder->hasResults()) {
+            $io->warning('Nothing to execute.');
+
+            return;
+        }
+
         $migrationsBucket = $this->getMigrationsBucket();
         $doneVersions = $this->getVersions($migrationsBucket);
         $migrationFactory = new MigrationFactory($this->clusterFactory);
@@ -75,6 +90,8 @@ class MigrateCommand extends Command
                 $migrationsBucket->upsert(static::DOCUMENT_VERSIONS, $doneVersions);
             }
         }
+
+        $io->success('Migrations done.');
     }
 
     /**

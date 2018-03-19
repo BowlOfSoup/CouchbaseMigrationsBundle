@@ -10,6 +10,7 @@ use Couchbase\Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
 
 class MigrateCommand extends Command
@@ -57,8 +58,16 @@ class MigrateCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
+
         $finder = new Finder();
         $finder->files()->in($this->migrationsDirectory);
+
+        if (!$finder->hasResults()) {
+            $io->warning('Nothing to execute.');
+
+            return;
+        }
 
         $migrationsBucket = $this->getMigrationsBucket();
         $doneVersions = $this->getVersions($migrationsBucket);
@@ -77,6 +86,8 @@ class MigrateCommand extends Command
                 $migrationsBucket->upsert(static::DOCUMENT_VERSIONS, $doneVersions);
             }
         }
+
+        $io->success('Migrations done.');
     }
 
     /**

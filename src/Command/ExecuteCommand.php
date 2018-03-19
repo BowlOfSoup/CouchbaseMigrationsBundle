@@ -7,6 +7,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class ExecuteCommand extends Command
 {
@@ -46,12 +47,16 @@ class ExecuteCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
+
         $className = 'Version' . $input->getArgument(static::INPUT_VERSION);
         $fileName =  $className . '.php';
         $version = $this->migrationsDirectory . '/' . $fileName;
 
         if (!file_exists($version)) {
-            throw new \InvalidArgumentException(sprintf('Migration: %s does not exist.', $fileName));
+            $io->error(sprintf('Migration: %s does not exist.', $fileName));
+
+            return;
         }
 
         require_once $version;
@@ -59,5 +64,7 @@ class ExecuteCommand extends Command
         /** @var \BowlOfSoup\CouchbaseMigrationsBundle\Migration\AbstractMigration $migration */
         $migration = new $className($this->clusterFactory);
         $migration->up();
+
+        $io->success('Migration done.');
     }
 }

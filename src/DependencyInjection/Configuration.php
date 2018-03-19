@@ -2,6 +2,7 @@
 
 namespace BowlOfSoup\CouchbaseMigrationsBundle\DependencyInjection;
 
+use BowlOfSoup\CouchbaseMigrationsBundle\Factory\BucketFactory;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -17,7 +18,7 @@ class Configuration implements ConfigurationInterface
             ->scalarNode('host')->isRequired()->end()
             ->scalarNode('user')->isRequired()->end()
             ->scalarNode('password')->isRequired()->end()
-            ->scalarNode('bucket_migrations')->defaultValue('migrations')->end()
+            ->scalarNode('bucket_migrations')->defaultValue(BucketFactory::BUCKET_MIGRATIONS)->end()
             ->end()
         ;
 

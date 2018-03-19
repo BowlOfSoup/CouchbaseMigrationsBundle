@@ -30,8 +30,7 @@ class ExecuteCommand extends Command
     public function __construct(
         string $projectDirectory,
         ClusterFactory $clusterFactory
-    )
-    {
+    ) {
         $this->migrationsDirectory = $projectDirectory . GenerateCommand::DIRECTORY_MIGRATIONS;
         $this->clusterFactory = $clusterFactory;
 

@@ -86,3 +86,11 @@ Fill the `app/parameters.yml` file with:
 
 * The `kernel.project_dir` option must hold the full path the the `src` directory.
 * The `couchbase_migrations.bucket_migrations` option must hold the bucket in which you want to store which migration has already been done.
+
+Contributing
+------------
+You are more then welcome to fork this repository, make changes and create a pull request back.
+
+* Create an issue and state the changes you want to make.
+* In your commit messages, refer to this issue.
+* Be sure to run `vendor/bin/php-cs-fixer fix` before you commit code changes. This will make the changed code adhere to the coding standards.

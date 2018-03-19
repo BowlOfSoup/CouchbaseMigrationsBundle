@@ -55,6 +55,7 @@ class ExecuteCommand extends Command
      *
      * @throws \InvalidArgumentException
      * @throws \LogicException
+     * @throws \ReflectionException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -76,7 +77,7 @@ class ExecuteCommand extends Command
         $iterator = $finder->getIterator();
         $iterator->rewind();
 
-        // get the first finder result
+        // Use the first result of found files.
         $migration = $migrationFactory->createByFile($iterator->current());
         $migration->up();
 

@@ -63,10 +63,12 @@ class MigrateCommand extends Command
      * @throws \BowlOfSoup\CouchbaseMigrationsBundle\Exception\BucketNoAccessException
      * @throws \InvalidArgumentException
      * @throws \LogicException
+     * @throws \ReflectionException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
+
         $finder = new Finder();
         $finder->files()->in($this->migrationsDirectory)->name('*.php');
 
@@ -83,11 +85,16 @@ class MigrateCommand extends Command
         foreach ($finder as $file) {
             $migration = $migrationFactory->createByFile($file);
 
-            if (!in_array(get_class($migration), $doneVersions)) {
-                $migration->up();
-                array_push($doneVersions, get_class($migration));
-                $migrationsBucket->upsert(static::DOCUMENT_VERSIONS, $doneVersions);
+            if (in_array(get_class($migration), $doneVersions)) {
+                continue;
             }
+
+            $migration->up();
+
+            array_push($doneVersions, get_class($migration));
+            $migrationsBucket->upsert(static::DOCUMENT_VERSIONS, $doneVersions);
+
+            $io->writeln(sprintf('Executed migration: <info>%s</info>.', get_class($migration)));
         }
 
         $io->success('Migrations done.');

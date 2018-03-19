@@ -22,6 +22,7 @@ class MigrationFactory
      * @param \Symfony\Component\Finder\SplFileInfo $file
      *
      * @throws \InvalidArgumentException
+     * @throws \ReflectionException
      *
      * @return \BowlOfSoup\CouchbaseMigrationsBundle\Migration\AbstractMigration
      */

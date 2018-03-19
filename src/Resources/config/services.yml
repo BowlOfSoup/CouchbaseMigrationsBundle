@@ -18,7 +18,7 @@ services:
       class: BowlOfSoup\CouchbaseMigrationsBundle\Command\MigrateCommand
       arguments:
         - %kernel.project_dir%
-        - %couchbase_migration.bucket_migrations%
+        - %couchbase_migrations.bucket_migrations%
         - '@BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory'
       tags:
         - { name: 'console.command' }
@@ -31,6 +31,6 @@ services:
     BowlOfSoup\CouchbaseMigrationsBundle\Model\ConnectionSettings:
       class: BowlOfSoup\CouchbaseMigrationsBundle\Model\ConnectionSettings
       arguments:
-        - %couchbase_migration.host%
-        - %couchbase_migration.user%
-        - %couchbase_migration.password%
+        - %couchbase_migrations.host%
+        - %couchbase_migrations.user%
+        - %couchbase_migrations.password%

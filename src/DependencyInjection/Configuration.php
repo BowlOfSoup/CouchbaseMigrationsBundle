@@ -10,7 +10,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('couchbase_migration');
+        $rootNode = $treeBuilder->root('couchbase_migrations');
 
         $rootNode
             ->children()

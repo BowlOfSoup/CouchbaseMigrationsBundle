@@ -18,10 +18,10 @@ class CouchbaseMigrationsExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $container->setParameter('couchbase_migration.bucket_migrations', (string) $config['bucket_migrations']);
-        $container->setParameter('couchbase_migration.host', (string) $config['host']);
-        $container->setParameter('couchbase_migration.user', (string) $config['user']);
-        $container->setParameter('couchbase_migration.password', (string) $config['password']);
+        $container->setParameter('couchbase_migrations.bucket_migrations', (string) $config['bucket_migrations']);
+        $container->setParameter('couchbase_migrations.host', (string) $config['host']);
+        $container->setParameter('couchbase_migrations.user', (string) $config['user']);
+        $container->setParameter('couchbase_migrations.password', (string) $config['password']);
 
         $loader = new YamlFileLoader(
             $container,

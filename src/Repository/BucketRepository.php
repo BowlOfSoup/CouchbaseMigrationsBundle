@@ -38,7 +38,7 @@ class BucketRepository
      *
      * @return array
      */
-    public function select(string $query, array $params = array())
+    public function select(string $query, array $params = [])
     {
         $result = $this->query($query, $params);
 
@@ -58,7 +58,7 @@ class BucketRepository
      *
      * @return object|array
      */
-    public function query(string $query, array $params = array())
+    public function query(string $query, array $params = [])
     {
         $query = N1qlQuery::fromString($query);
         $query->namedParams($params);

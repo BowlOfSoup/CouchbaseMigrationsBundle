@@ -59,12 +59,15 @@ class ExecuteCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
+
         $fileName = 'Version' . $input->getArgument(static::INPUT_VERSION) . '.php';
+
         $finder = new Finder();
         $finder->files()->in($this->migrationsDirectory)->name($fileName);
 
         if (!$finder->hasResults()) {
             $io->error(sprintf('Migration: %s does not exist in %s.', $fileName, $this->migrationsDirectory));
+
             return;
         }
 

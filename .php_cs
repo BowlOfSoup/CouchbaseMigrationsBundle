@@ -116,7 +116,7 @@ final class CustomFinder extends Finder
         if ($branch === $destinationBranch) {
             $this->files = $this->findFiles(__DIR__);
         } else {
-            $this->pipedExec(sprintf('(git diff origin/%s.. --name-only --diff-filter=ACMRTUXB 2>/dev/null; git diff --cached --name-only --diff-filter=ACMRTUXB 2>/dev/null) | grep "\.php$" 2>/dev/null | sort 2>/dev/null | uniq 2>/dev/null', $destinationBranch), $this->files);
+            $this->pipedExec(sprintf('(git diff origin/%s --name-only --diff-filter=ACMRTUXB 2>/dev/null; git diff --cached --name-only --diff-filter=ACMRTUXB 2>/dev/null) | grep "\.php$" 2>/dev/null | sort 2>/dev/null | uniq 2>/dev/null', $destinationBranch), $this->files);
         }
 
         $repositoryRoot = $this->pipedExec('git rev-parse --show-toplevel 2>/dev/null');

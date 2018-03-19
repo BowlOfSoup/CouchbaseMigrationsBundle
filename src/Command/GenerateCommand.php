@@ -44,9 +44,9 @@ class GenerateCommand extends Command
             throw new \InvalidArgumentException(sprintf('Migrations directory "%s" does not exist.', $this->migrationsDirectory));
         }
 
-        $file =  '/Version' . $version . '.php';
+        $file = '/Version' . $version . '.php';
         file_put_contents($this->migrationsDirectory . $file, $code);
 
-        $output->writeln(PHP_EOL . sprintf('Generated new migration to "<info>%s</info>"', static::DIRECTORY_MIGRATIONS . $file). PHP_EOL);
+        $output->writeln(PHP_EOL . sprintf('Generated new migration to "<info>%s</info>"', static::DIRECTORY_MIGRATIONS . $file) . PHP_EOL);
     }
 }

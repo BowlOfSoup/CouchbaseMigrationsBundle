@@ -29,7 +29,7 @@ abstract class AbstractMigration
     /**
      * Up migration.
      */
-    public abstract function up();
+    abstract public function up();
 
     /**
      * @param string $bucketName

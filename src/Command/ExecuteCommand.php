@@ -50,7 +50,7 @@ class ExecuteCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $className = 'Version' . $input->getArgument(static::INPUT_VERSION);
-        $fileName =  $className . '.php';
+        $fileName = $className . '.php';
         $version = $this->migrationsDirectory . '/' . $fileName;
 
         if (!file_exists($version)) {

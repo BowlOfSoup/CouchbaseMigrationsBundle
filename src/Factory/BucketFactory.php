@@ -38,9 +38,9 @@ class BucketFactory
     }
 
     /**
-     * @return \Couchbase\Bucket
-     *
      * @throws \BowlOfSoup\CouchbaseMigrationsBundle\Exception\BucketNoAccessException
+     *
+     * @return \Couchbase\Bucket
      */
     public function getBucket(): Bucket
     {

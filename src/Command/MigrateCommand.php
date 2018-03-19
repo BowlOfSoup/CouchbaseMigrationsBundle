@@ -91,9 +91,9 @@ class MigrateCommand extends Command
     }
 
     /**
-     * @return \Couchbase\Bucket
-     *
      * @throws \BowlOfSoup\CouchbaseMigrationsBundle\Exception\BucketNoAccessException
+     *
+     * @return \Couchbase\Bucket
      */
     private function getMigrationsBucket()
     {
@@ -117,7 +117,7 @@ class MigrateCommand extends Command
             return $result->value;
         } catch (Exception $e) {
             // This occurs when the document containing the versions can't be found. Create an empty document.
-            $migrationsBucket->upsert(static::DOCUMENT_VERSIONS, array());
+            $migrationsBucket->upsert(static::DOCUMENT_VERSIONS, []);
 
             return [];
         }

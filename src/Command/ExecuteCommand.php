@@ -3,11 +3,13 @@
 namespace BowlOfSoup\CouchbaseMigrationsBundle\Command;
 
 use BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory;
+use BowlOfSoup\CouchbaseMigrationsBundle\Factory\MigrationFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Finder\Finder;
 
 class ExecuteCommand extends Command
 {
@@ -22,6 +24,8 @@ class ExecuteCommand extends Command
     /**
      * @param string $projectDirectory
      * @param \BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory $clusterFactory
+     *
+     * @throws \Symfony\Component\Console\Exception\LogicException
      */
     public function __construct(
         string $projectDirectory,
@@ -33,6 +37,10 @@ class ExecuteCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
+     * @throws \Symfony\Component\Console\Exception\LogicException
+     */
     protected function configure()
     {
         $this
@@ -44,25 +52,32 @@ class ExecuteCommand extends Command
     /**
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *
+     * @throws \InvalidArgumentException
+     * @throws \LogicException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
 
-        $className = 'Version' . $input->getArgument(static::INPUT_VERSION);
-        $fileName = $className . '.php';
-        $version = $this->migrationsDirectory . '/' . $fileName;
+        $fileName = 'Version' . $input->getArgument(static::INPUT_VERSION) . '.php';
 
-        if (!file_exists($version)) {
-            $io->error(sprintf('Migration: %s does not exist.', $fileName));
+        $finder = new Finder();
+        $finder->files()->in($this->migrationsDirectory)->name($fileName);
+
+        if (!$finder->hasResults()) {
+            $io->error(sprintf('Migration: %s does not exist in %s.', $fileName, $this->migrationsDirectory));
 
             return;
         }
 
-        require_once $version;
+        $migrationFactory = new MigrationFactory($this->clusterFactory);
 
-        /** @var \BowlOfSoup\CouchbaseMigrationsBundle\Migration\AbstractMigration $migration */
-        $migration = new $className($this->clusterFactory);
+        $iterator = $finder->getIterator();
+        $iterator->rewind();
+
+        // get the first finder result
+        $migration = $migrationFactory->createByFile($iterator->current());
         $migration->up();
 
         $io->success('Migration done.');

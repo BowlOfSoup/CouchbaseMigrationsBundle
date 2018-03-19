@@ -21,13 +21,13 @@ class MigrationFactory
     /**
      * @param \Symfony\Component\Finder\SplFileInfo $file
      *
-     * @return \BowlOfSoup\CouchbaseMigrationsBundle\Migration\AbstractMigration
-     *
      * @throws \InvalidArgumentException
+     *
+     * @return \BowlOfSoup\CouchbaseMigrationsBundle\Migration\AbstractMigration
      */
     public function createByFile(SplFileInfo $file): AbstractMigration
     {
-        if ($file->getExtension() !== 'php') {
+        if ('php' !== $file->getExtension()) {
             throw new \InvalidArgumentException('File ' . $file->getPath() . ' does not have a .php extension');
         }
 
@@ -36,7 +36,7 @@ class MigrationFactory
         $reflectionInstance = new \ReflectionClass($className);
 
         if (!$reflectionInstance->isSubclassOf(AbstractMigration::class)) {
-            throw new \InvalidArgumentException('Class '.$className.' does not extend '.AbstractMigration::class);
+            throw new \InvalidArgumentException('Class ' . $className . ' does not extend ' . AbstractMigration::class);
         }
 
         return new $className($this->clusterFactory);

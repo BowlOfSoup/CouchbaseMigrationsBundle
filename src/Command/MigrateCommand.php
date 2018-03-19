@@ -81,7 +81,6 @@ class MigrateCommand extends Command
         $migrationFactory = new MigrationFactory($this->clusterFactory);
 
         foreach ($finder as $file) {
-
             $migration = $migrationFactory->createByFile($file);
 
             if (!in_array(get_class($migration), $doneVersions)) {

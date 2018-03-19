@@ -68,7 +68,7 @@ class MigrateCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $finder = new Finder();
-        $finder->files()->in($this->migrationsDirectory);
+        $finder->files()->in($this->migrationsDirectory)->name('*.php');
 
         if (!$finder->hasResults()) {
             $io->warning('Nothing to execute.');

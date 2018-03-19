@@ -72,8 +72,11 @@ class ExecuteCommand extends Command
         }
 
         $migrationFactory = new MigrationFactory($this->clusterFactory);
+
         $iterator = $finder->getIterator();
         $iterator->rewind();
+
+        // get the first finder result
         $migration = $migrationFactory->createByFile($iterator->current());
         $migration->up();
 

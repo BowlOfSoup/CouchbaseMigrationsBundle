@@ -3,7 +3,6 @@
 namespace BowlOfSoup\CouchbaseMigrationsBundle\Factory;
 
 use BowlOfSoup\CouchbaseMigrationsBundle\Migration\AbstractMigration;
-use ReflectionClass;
 use Symfony\Component\Finder\SplFileInfo;
 
 class MigrationFactory
@@ -34,9 +33,9 @@ class MigrationFactory
 
         require_once $file->getRealPath();
         $className = str_replace('.php', '', $file->getFilename());
-        $reflectionInstance = new ReflectionClass($className);
+        $reflectionInstance = new \ReflectionClass($className);
 
-        if(!$reflectionInstance->isSubclassOf(AbstractMigration::class)) {
+        if (!$reflectionInstance->isSubclassOf(AbstractMigration::class)) {
             throw new \InvalidArgumentException('Class '.$className.' does not extend '.AbstractMigration::class);
         }
 

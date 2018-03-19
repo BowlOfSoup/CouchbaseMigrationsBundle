@@ -5,6 +5,7 @@ namespace BowlOfSoup\CouchbaseMigrationsBundle\Command;
 use BowlOfSoup\CouchbaseMigrationsBundle\Exception\BucketNoAccessException;
 use BowlOfSoup\CouchbaseMigrationsBundle\Factory\BucketFactory;
 use BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory;
+use BowlOfSoup\CouchbaseMigrationsBundle\Factory\MigrationFactory;
 use Couchbase\Bucket;
 use Couchbase\Exception;
 use Symfony\Component\Console\Command\Command;
@@ -54,26 +55,23 @@ class MigrateCommand extends Command
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      *
      * @throws \BowlOfSoup\CouchbaseMigrationsBundle\Exception\BucketNoAccessException
+     * @throws \InvalidArgumentException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $finder = new Finder();
         $finder->files()->in($this->migrationsDirectory);
-
         $migrationsBucket = $this->getMigrationsBucket();
         $doneVersions = $this->getVersions($migrationsBucket);
+        $migrationFactory = new MigrationFactory($this->clusterFactory);
 
         foreach ($finder as $file) {
-            $version = str_replace('.php', '', $file->getFilename());
 
-            if (!in_array($version, $doneVersions)) {
-                require_once $file->getPathname();
+            $migration = $migrationFactory->createByFile($file);
 
-                /** @var \BowlOfSoup\CouchbaseMigrationsBundle\Migration\AbstractMigration $migration */
-                $migration = new $version($this->clusterFactory);
+            if (!in_array(get_class($migration), $doneVersions)) {
                 $migration->up();
-
-                array_push($doneVersions, $version);
+                array_push($doneVersions, get_class($migration));
                 $migrationsBucket->upsert(static::DOCUMENT_VERSIONS, $doneVersions);
             }
         }

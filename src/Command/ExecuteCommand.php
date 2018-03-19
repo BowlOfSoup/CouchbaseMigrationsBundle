@@ -3,10 +3,12 @@
 namespace BowlOfSoup\CouchbaseMigrationsBundle\Command;
 
 use BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory;
+use BowlOfSoup\CouchbaseMigrationsBundle\Factory\MigrationFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Finder\Finder;
 
 class ExecuteCommand extends Command
 {
@@ -43,21 +45,24 @@ class ExecuteCommand extends Command
     /**
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *
+     * @throws \InvalidArgumentException
+     * @throws \LogicException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $className = 'Version' . $input->getArgument(static::INPUT_VERSION);
-        $fileName =  $className . '.php';
-        $version = $this->migrationsDirectory . '/' . $fileName;
+        $fileName = 'Version' . $input->getArgument(static::INPUT_VERSION).'.php';
+        $finder = new Finder();
+        $finder->files()->in($this->migrationsDirectory)->name($fileName);
 
-        if (!file_exists($version)) {
-            throw new \InvalidArgumentException(sprintf('Migration: %s does not exist.', $fileName));
+        if(count($finder) !== 1) {
+            throw new \InvalidArgumentException(sprintf('Migration: %s does not exist in %s.', $fileName, $this->migrationsDirectory));
         }
 
-        require_once $version;
-
-        /** @var \BowlOfSoup\CouchbaseMigrationsBundle\Migration\AbstractMigration $migration */
-        $migration = new $className($this->clusterFactory);
+        $migrationFactory = new MigrationFactory($this->clusterFactory);
+        $iterator = $finder->getIterator();
+        $iterator->rewind();
+        $migration = $migrationFactory->createByFile($iterator->current());
         $migration->up();
     }
 }

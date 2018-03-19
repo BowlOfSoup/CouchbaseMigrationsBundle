@@ -62,5 +62,27 @@ The configured bucket (`bucket_migrations` in the config file) will contain a do
     bin/console couchbase:migrations:execute VERSION_NUMBER
     
 This will execute the given version (file in `app/CouchbaseMigrations`).
-Replace `VERSION_NUMBER` by the version (**date-time part** of the file) you want to execute.
+Replace `VERSION_NUMBER` with the version (**date-time part** of the file) you want to execute.
 You can execute a version indefinitely: will not be kept track of.
+
+How to use as standalone application
+------------------------------------
+You can use this bundle as standalone application, so, not use it within a Symfony installation.
+This is also perfect for development.
+
+* Checkout this repository and create an `app` directory within the `src` directory.
+* Create a `app/CouchbaseMigrations` directory.
+* Create a `app/parameters.yml` which holds the config parameters.
+
+Fill the `app/parameters.yml` file with:
+
+    parameters:
+      kernel.project_dir:
+
+      couchbase_migrations.bucket_migrations:
+      couchbase_migrations.host:
+      couchbase_migrations.user:
+      couchbase_migrations.password:
+
+* The `kernel.project_dir` option must hold the full path the the `src` directory.
+* The `couchbase_migrations.bucket_migrations` option must hold the bucket in which you want to store which migration has already been done.

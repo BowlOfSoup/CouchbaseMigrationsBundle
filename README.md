@@ -32,13 +32,18 @@ Create a `CouchbaseMigrations` directory in your `app` directory. This will cont
     $ mkdir app/CouchbaseMigrations
     
 Add the correct parameters in `app/config/config.yml`. 
-The option `bucket_migrations` is not mandatory, but then a bucket named `migrations` must be accessible. 
 
     couchbase_migrations:
         host:
         user:
         password:
         bucket_migrations:
+        bucket_default:
+
+* **`bucket_migrations`** must hold the bucket in which you want to store which migration has already been done.
+Not mandatory, but then a bucket named `migrations` must be accessible.
+* **`bucket_default`** must hold your default bucket.
+If you do not have a default bucket, use `%couchbase_migrations.bucket_migrations%` as option.
         
 Usage
 -----
@@ -65,6 +70,33 @@ This will execute the given version (file in `app/CouchbaseMigrations`).
 Replace `VERSION_NUMBER` with the version (**date-time part** of the file) you want to execute.
 You can execute a version indefinitely: will not be kept track of.
 
+How to write a migration
+------------------------
+When you have generated a migration, open the file and use the `up` function. Example:
+
+```php
+public function up()
+{
+    $this->selectBucket(); // If you do not pass a bucket name, the default bucket will be used.
+
+    $this->bucketRepository->query(
+        'CREATE INDEX `i_someindexname` ON `bucketname`(`propertyname`) WHERE (`someotherpropertyname` = "propertycontent")'
+    );
+}
+```
+
+If you want to use your default bucket in the above query, use:
+
+```php
+$this->bucketRepository->query(
+    CREATE INDEX `i_someindexname` ON `' . $this->clusterFactory->getDefaultBucketName() . '`(`propertyname`) WHERE (`someotherpropertyname` = "propertycontent")
+);
+```
+
+* The `$this->bucketRepository` can be used to make it easier to do queries on a bucket (like named parameters).
+* You can also directly do actions on the bucket by using the return value of `$this->selectBucket()`.
+
+
 How to use as standalone application
 ------------------------------------
 You can use this bundle as standalone application, so, not use it within a Symfony installation.
@@ -85,7 +117,7 @@ Fill the `app/parameters.yml` file with:
       couchbase_migrations.password:
 
 * The `kernel.project_dir` option must hold the full path the the `src` directory.
-* The `couchbase_migrations.bucket_migrations` option must hold the bucket in which you want to store which migration has already been done.
+* See 'Installation and setup' for more info on the options.
 
 Contributing
 ------------

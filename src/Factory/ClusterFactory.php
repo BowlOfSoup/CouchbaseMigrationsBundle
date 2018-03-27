@@ -54,7 +54,7 @@ class ClusterFactory
      */
     public function getDefaultBucketName()
     {
-        return $this->getDefaultBucketName();
+        return $this->defaultBucketName;
     }
 
     private function authenticateForCluster()

@@ -18,6 +18,7 @@ class Configuration implements ConfigurationInterface
             ->scalarNode('host')->isRequired()->end()
             ->scalarNode('user')->isRequired()->end()
             ->scalarNode('password')->isRequired()->end()
+            ->scalarNode('bucket_default')->isRequired()->end()
             ->scalarNode('bucket_migrations')->defaultValue(BucketFactory::BUCKET_MIGRATIONS)->end()
             ->end()
         ;

@@ -38,8 +38,12 @@ abstract class AbstractMigration
      *
      * @return \Couchbase\Bucket
      */
-    protected function selectBucket(string $bucketName)
+    protected function selectBucket(string $bucketName = null)
     {
+        if (null === $bucketName) {
+            $bucketName = $this->clusterFactory->getDefaultBucket();
+        }
+
         if (null !== $this->bucketFactory && $this->bucketFactory->getBucketName() === $bucketName) {
             return $this->bucketFactory->getBucket();
         }

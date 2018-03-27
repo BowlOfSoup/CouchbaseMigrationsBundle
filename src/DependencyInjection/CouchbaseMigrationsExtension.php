@@ -18,6 +18,7 @@ class CouchbaseMigrationsExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
+        $container->setParameter('couchbase_migrations.bucket_default', (string) $config['bucket_default']);
         $container->setParameter('couchbase_migrations.bucket_migrations', (string) $config['bucket_migrations']);
         $container->setParameter('couchbase_migrations.host', (string) $config['host']);
         $container->setParameter('couchbase_migrations.user', (string) $config['user']);

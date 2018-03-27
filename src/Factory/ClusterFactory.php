@@ -11,16 +11,22 @@ class ClusterFactory
     /** @var \BowlOfSoup\CouchbaseMigrationsBundle\Model\ConnectionSettings */
     private $connectionSettings;
 
+    /** @var string */
+    private $defaultBucketName;
+
     /** @var \Couchbase\Cluster */
     private $cluster;
 
     /**
      * @param \BowlOfSoup\CouchbaseMigrationsBundle\Model\ConnectionSettings $connectionSettings
+     * @param string $defaultBucketName
      */
     public function __construct(
-        ConnectionSettings $connectionSettings
+        ConnectionSettings $connectionSettings,
+        string $defaultBucketName
     ) {
         $this->connectionSettings = $connectionSettings;
+        $this->defaultBucketName = $defaultBucketName;
     }
 
     /**
@@ -41,6 +47,14 @@ class ClusterFactory
         $this->authenticateForCluster();
 
         return $this->cluster;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultBucketName()
+    {
+        return $this->getDefaultBucketName();
     }
 
     private function authenticateForCluster()

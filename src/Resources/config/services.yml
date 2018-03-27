@@ -27,6 +27,7 @@ services:
       class: BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory
       arguments:
         - '@BowlOfSoup\CouchbaseMigrationsBundle\Model\ConnectionSettings'
+        - %couchbase_migrations.bucket_default%
 
     BowlOfSoup\CouchbaseMigrationsBundle\Model\ConnectionSettings:
       class: BowlOfSoup\CouchbaseMigrationsBundle\Model\ConnectionSettings

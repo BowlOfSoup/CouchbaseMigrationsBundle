@@ -41,7 +41,7 @@ abstract class AbstractMigration
     protected function selectBucket(string $bucketName = null)
     {
         if (null === $bucketName) {
-            $bucketName = $this->clusterFactory->getDefaultBucket();
+            $bucketName = $this->clusterFactory->getDefaultBucketName();
         }
 
         if (null !== $this->bucketFactory && $this->bucketFactory->getBucketName() === $bucketName) {

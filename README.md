@@ -74,7 +74,7 @@ How to write a migration
 ------------------------
 When you have generated a migration, open the file and use the `up` function. Example:
 
-```php
+```
 public function up()
 {
     $this->selectBucket(); // If you do not pass a bucket name, the default bucket will be used.
@@ -87,7 +87,7 @@ public function up()
 
 If you want to use your default bucket in the above query, use:
 
-```php
+```
 $this->bucketRepository->query(
     CREATE INDEX `i_someindexname` ON `' . $this->clusterFactory->getDefaultBucketName() . '`(`propertyname`) WHERE (`someotherpropertyname` = "propertycontent")
 );

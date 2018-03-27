@@ -17,7 +17,7 @@ class MigrationScript
         $io = $event->getIO();
 
         try {
-            $process = new Process('bin/console couchbase:migrations:migrate --no-visual');
+            $process = new Process('bin/console couchbase:migrations:migrate --no-verbose');
             $process->setTimeout(null);
             $process->mustRun(static::createIOCallback($io));
         } catch (ProcessFailedException $e) {

@@ -10,12 +10,14 @@ use Couchbase\Bucket;
 use Couchbase\Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
 
 class MigrateCommand extends Command
 {
+    const OPTION_NO_VERBOSE = 'no-verbose';
     const DOCUMENT_VERSIONS = 'migrations::versions';
 
     /** @var string */
@@ -53,7 +55,8 @@ class MigrateCommand extends Command
     {
         $this
             ->setName('couchbase:migrations:migrate')
-            ->setDescription('Executes Couchbase migrations.');
+            ->setDescription('Executes Couchbase migrations.')
+            ->addOption(static::OPTION_NO_VERBOSE, null, InputOption::VALUE_NONE, 'Don\'t output any visuals.');
     }
 
     /**
@@ -77,7 +80,9 @@ class MigrateCommand extends Command
             ->name('Version*.php');
 
         if (!$finder->hasResults()) {
-            $io->warning('Nothing to execute.');
+            if (!$input->getOption(static::OPTION_NO_VERBOSE)) {
+                $io->warning('Nothing to execute.');
+            }
 
             return;
         }
@@ -98,10 +103,14 @@ class MigrateCommand extends Command
             array_push($doneVersions, get_class($migration));
             $migrationsBucket->upsert(static::DOCUMENT_VERSIONS, $doneVersions);
 
-            $io->writeln(sprintf('Executed migration: <info>%s</info>.', get_class($migration)));
+            if (!$input->getOption(static::OPTION_NO_VERBOSE)) {
+                $io->writeln(sprintf('Executed migration: <info>%s</info>.', get_class($migration)));
+            }
         }
 
-        $io->success('Migrations done.');
+        if (!$input->getOption(static::OPTION_NO_VERBOSE)) {
+            $io->success('Migrations done.');
+        }
     }
 
     /**

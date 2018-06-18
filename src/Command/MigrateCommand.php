@@ -77,7 +77,8 @@ class MigrateCommand extends Command
             ->files()
             ->in($this->migrationsDirectory)
             ->depth('== 0')
-            ->name('Version*.php');
+            ->name('Version*.php')
+            ->sortByName();
 
         if (!$finder->hasResults()) {
             if (!$input->getOption(static::OPTION_NO_VERBOSE)) {

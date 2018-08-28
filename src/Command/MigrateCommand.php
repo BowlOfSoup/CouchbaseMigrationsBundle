@@ -99,7 +99,12 @@ class MigrateCommand extends Command
                 continue;
             }
 
-            $migration->up();
+            try {
+                $migration->up();
+            } catch (\Throwable $t) {
+                $migration->selectBucket();
+                $migration->up();
+            }
 
             array_push($doneVersions, get_class($migration));
             $migrationsBucket->upsert(static::DOCUMENT_VERSIONS, $doneVersions);

@@ -56,6 +56,7 @@ class ExecuteCommand extends Command
      * @throws \InvalidArgumentException
      * @throws \LogicException
      * @throws \ReflectionException
+     * @throws \BowlOfSoup\CouchbaseMigrationsBundle\Exception\BucketNoAccessException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -79,7 +80,12 @@ class ExecuteCommand extends Command
 
         // Use the first result of found files.
         $migration = $migrationFactory->createByFile($iterator->current());
-        $migration->up();
+        try {
+            $migration->up();
+        } catch (\Throwable $t) {
+            $migration->selectBucket();
+            $migration->up();
+        }
 
         $io->success('Migration done.');
     }

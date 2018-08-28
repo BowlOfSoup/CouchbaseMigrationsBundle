@@ -7,6 +7,13 @@ services:
       tags:
         - { name: 'console.command' }
 
+    BowlOfSoup\CouchbaseMigrationsBundle\Command\FlushDataCommand:
+      class: BowlOfSoup\CouchbaseMigrationsBundle\Command\FlushDataCommand
+      arguments:
+        - '@BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory'
+      tags:
+        - { name: 'console.command' }
+
     BowlOfSoup\CouchbaseMigrationsBundle\Command\GenerateCommand:
       class: BowlOfSoup\CouchbaseMigrationsBundle\Command\GenerateCommand
       arguments:

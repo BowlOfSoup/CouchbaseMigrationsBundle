@@ -1,6 +1,7 @@
 {
   "name": "bowlofsoup/couchbase-migrations-bundle",
   "description": "Migrations for Couchbase in a Symfony bundle.",
+  "license": "MIT",
   "require": {
     "php": ">=7.0",
     "symfony/console": "3.4.*",

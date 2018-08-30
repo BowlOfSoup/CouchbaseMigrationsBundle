@@ -48,7 +48,7 @@ If you do not have a default bucket, use `%couchbase_migrations.bucket_migration
 Usage
 -----
 
-#### Generate migraton
+#### Generate migration
 
     bin/console couchbase:migrations:generate
 
@@ -77,7 +77,8 @@ When you have generated a migration, open the file and use the `up` function. Ex
 ```
 public function up()
 {
-    $this->selectBucket(); // If you do not pass a bucket name, the default bucket will be used.
+    // You can omit the selectBucket() method if you want to use the bucket configured in the config.yml.
+    $this->selectBucket();
 
     $this->bucketRepository->query(
         'CREATE INDEX `i_someindexname` ON `bucketname`(`propertyname`) WHERE (`someotherpropertyname` = "propertycontent")'
@@ -85,14 +86,21 @@ public function up()
 }
 ```
 
-If you want to use your default bucket in the above query, use:
+or
 
 ```
-$this->bucketRepository->query(
-    CREATE INDEX `i_someindexname` ON `' . $this->clusterFactory->getDefaultBucketName() . '`(`propertyname`) WHERE (`someotherpropertyname` = "propertycontent")
-);
+public function up()
+{
+    $bucket = $this->selectBucket('optional-bucket-name');
+
+    $result = $bucket->get('some-document-key');
+    $documentContent = $result->value;
+
+    $bucket->insert('some-other-document-key', $documentContent);
+}
 ```
 
+So:
 * The `$this->bucketRepository` can be used to make it easier to do queries on a bucket (like named parameters).
 * You can also directly do actions on the bucket by using the return value of `$this->selectBucket()`.
 

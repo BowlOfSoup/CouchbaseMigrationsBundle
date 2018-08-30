@@ -70,6 +70,15 @@ This will execute the given version (file in `app/CouchbaseMigrations`).
 Replace `VERSION_NUMBER` with the version (**date-time part** of the file) you want to execute.
 You can execute a version indefinitely: will not be kept track of.
 
+#### Flush all data in a bucket, except the migrations
+
+    bin/console couchbase:migrations:flush-data BUCKET_NAME
+
+Flushes all the data in a bucket, if flushing is enabled for that bucket, except the migrations version document.
+Replace `BUCKET_NAME` with the name of the bucket for which you want the data to be flushed.
+
+Can be handy if you want to reset all data in a bucket, but do not want to lose your migrations.
+
 How to write a migration
 ------------------------
 When you have generated a migration, open the file and use the `up` function. Example:

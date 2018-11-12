@@ -7,13 +7,18 @@ use BowlOfSoup\CouchbaseMigrationsBundle\Factory\MigrationFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
 
+/**
+ * Executes a single Couchbase migration.
+ */
 class ExecuteCommand extends Command
 {
     const INPUT_VERSION = 'version';
+    const OPTION_MIGRATE_DOWN = 'down';
 
     /** @var string */
     private $migrationsDirectory;
@@ -46,7 +51,8 @@ class ExecuteCommand extends Command
         $this
             ->setName('couchbase:migrations:execute')
             ->setDescription('Executes a single Couchbase migration.')
-            ->addArgument(static::INPUT_VERSION, InputArgument::REQUIRED, 'Which version do you want to execute?');
+            ->addArgument(static::INPUT_VERSION, InputArgument::REQUIRED, 'Which version do you want to execute?')
+            ->addOption(static::OPTION_MIGRATE_DOWN, null, InputOption::VALUE_NONE, 'Undo migration.');
     }
 
     /**
@@ -80,10 +86,11 @@ class ExecuteCommand extends Command
 
         // Use the first result of found files.
         $migration = $migrationFactory->createByFile($iterator->current());
-        try {
-            $migration->up();
-        } catch (\Throwable $t) {
-            $migration->selectBucket();
+        $migration->selectBucket();
+
+        if ($input->getOption(static::OPTION_MIGRATE_DOWN)) {
+            $migration->down();
+        } else {
             $migration->up();
         }
 

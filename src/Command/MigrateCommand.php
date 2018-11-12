@@ -15,6 +15,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
 
+/**
+ * Execute all (pending) Couchbase migrations.
+ */
 class MigrateCommand extends Command
 {
     const OPTION_NO_VERBOSE = 'no-verbose';
@@ -55,7 +58,7 @@ class MigrateCommand extends Command
     {
         $this
             ->setName('couchbase:migrations:migrate')
-            ->setDescription('Executes Couchbase migrations.')
+            ->setDescription('Execute all (pending) Couchbase migrations.')
             ->addOption(static::OPTION_NO_VERBOSE, null, InputOption::VALUE_NONE, 'Don\'t output any visuals.');
     }
 
@@ -99,12 +102,8 @@ class MigrateCommand extends Command
                 continue;
             }
 
-            try {
-                $migration->up();
-            } catch (\Throwable $t) {
-                $migration->selectBucket();
-                $migration->up();
-            }
+            $migration->selectBucket();
+            $migration->up();
 
             array_push($doneVersions, get_class($migration));
             $migrationsBucket->upsert(static::DOCUMENT_VERSIONS, $doneVersions);

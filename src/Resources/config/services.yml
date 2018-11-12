@@ -1,4 +1,13 @@
 services:
+    BowlOfSoup\CouchbaseMigrationsBundle\Command\CreateBucketCommand:
+        class: BowlOfSoup\CouchbaseMigrationsBundle\Command\CreateBucketCommand
+        arguments:
+        - '@BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory'
+        - %couchbase_migrations.user%
+        - %couchbase_migrations.password%
+        tags:
+        - { name: 'console.command' }
+
     BowlOfSoup\CouchbaseMigrationsBundle\Command\ExecuteCommand:
       class: BowlOfSoup\CouchbaseMigrationsBundle\Command\ExecuteCommand
       arguments:
@@ -28,6 +37,15 @@ services:
         - %couchbase_migrations.bucket_migrations%
         - '@BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory'
       tags:
+        - { name: 'console.command' }
+
+    BowlOfSoup\CouchbaseMigrationsBundle\Command\RemoveBucketCommand:
+        class: BowlOfSoup\CouchbaseMigrationsBundle\Command\RemoveBucketCommand
+        arguments:
+        - '@BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory'
+        - %couchbase_migrations.user%
+        - %couchbase_migrations.password%
+        tags:
         - { name: 'console.command' }
 
     BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory:

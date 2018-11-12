@@ -27,6 +27,9 @@ class CreateBucketCommand extends Command
     /** @var string */
     private $password;
 
+    /** @var string */
+    private $bucketName;
+
     /** @var array */
     private $bucketOptions = [
         'bucketType' => 'couchbase',
@@ -41,15 +44,18 @@ class CreateBucketCommand extends Command
      * @param \BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory $clusterFactory
      * @param string $username
      * @param string $password
+     * @param string $bucketName
      */
     public function __construct(
         ClusterFactory $clusterFactory,
         string $username,
-        string $password
+        string $password,
+        string $bucketName
     ) {
         $this->cluster = $clusterFactory->getCluster();
         $this->username = $username;
         $this->password = $password;
+        $this->bucketName = $bucketName;
 
         parent::__construct();
     }
@@ -63,7 +69,7 @@ class CreateBucketCommand extends Command
         $this
             ->setName('couchbase:migrations:create-bucket')
             ->setDescription('Creates a bucket.')
-            ->addArgument(static::ARGUMENT_BUCKET_NAME, InputArgument::REQUIRED, 'Name of the bucket your want to create.');
+            ->addArgument(static::ARGUMENT_BUCKET_NAME, InputArgument::OPTIONAL, 'Name of the bucket your want to create.');
     }
 
     /**
@@ -73,7 +79,11 @@ class CreateBucketCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
-        $bucketName = $input->getArgument(static::ARGUMENT_BUCKET_NAME);
+
+        $bucketName = $this->bucketName;
+        if (null !== $input->getArgument(static::ARGUMENT_BUCKET_NAME)) {
+            $bucketName = $input->getArgument(static::ARGUMENT_BUCKET_NAME);
+        }
 
         try {
             $this->cluster->openBucket($bucketName);

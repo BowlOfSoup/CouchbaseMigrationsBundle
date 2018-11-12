@@ -27,21 +27,27 @@ class RemoveBucketCommand extends Command
     /** @var string */
     private $password;
 
+    /** @var string */
+    private $bucketName;
+
     /**
      * @param \BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory $clusterFactory
      * @param string $username
      * @param string $password
+     * @param string $bucketName
      */
     public function __construct(
         ClusterFactory $clusterFactory,
         string $username,
-        string $password
+        string $password,
+        string $bucketName
     ) {
         $this->cluster = $clusterFactory->getCluster();
         $this->username = $username;
         $this->password = $password;
 
         parent::__construct();
+        $this->bucketName = $bucketName;
     }
 
     /**
@@ -52,8 +58,8 @@ class RemoveBucketCommand extends Command
     {
         $this
             ->setName('couchbase:migrations:remove-bucket')
-            ->setDescription('Removed a bucket.')
-            ->addArgument(static::ARGUMENT_BUCKET_NAME, InputArgument::REQUIRED, 'Name of the bucket your want to remove.');
+            ->setDescription('Remove a bucket.')
+            ->addArgument(static::ARGUMENT_BUCKET_NAME, InputArgument::OPTIONAL, 'Name of the bucket your want to remove.');
     }
 
     /**
@@ -63,7 +69,11 @@ class RemoveBucketCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
-        $bucketName = $input->getArgument(static::ARGUMENT_BUCKET_NAME);
+
+        $bucketName = $this->bucketName;
+        if (null !== $input->getArgument(static::ARGUMENT_BUCKET_NAME)) {
+            $bucketName = $input->getArgument(static::ARGUMENT_BUCKET_NAME);
+        }
 
         try {
             $this->cluster->openBucket($bucketName);

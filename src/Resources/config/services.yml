@@ -5,6 +5,7 @@ services:
         - '@BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory'
         - %couchbase_migrations.user%
         - %couchbase_migrations.password%
+        - %couchbase_migrations.bucket_default%
         tags:
         - { name: 'console.command' }
 
@@ -45,6 +46,7 @@ services:
         - '@BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory'
         - %couchbase_migrations.user%
         - %couchbase_migrations.password%
+        - %couchbase_migrations.bucket_default%
         tags:
         - { name: 'console.command' }
 

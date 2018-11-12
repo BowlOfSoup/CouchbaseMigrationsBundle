@@ -45,9 +45,9 @@ class RemoveBucketCommand extends Command
         $this->cluster = $clusterFactory->getCluster();
         $this->username = $username;
         $this->password = $password;
+        $this->bucketName = $bucketName;
 
         parent::__construct();
-        $this->bucketName = $bucketName;
     }
 
     /**

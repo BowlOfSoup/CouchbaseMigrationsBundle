@@ -32,6 +32,13 @@ abstract class AbstractMigration
     abstract public function up();
 
     /**
+     * Down migration.
+     */
+    public function down()
+    {
+    }
+
+    /**
      * @param string $bucketName
      *
      * @throws \BowlOfSoup\CouchbaseMigrationsBundle\Exception\BucketNoAccessException

@@ -3,6 +3,7 @@
   "description": "Migrations for Couchbase in a Symfony bundle.",
   "license": "MIT",
   "require": {
+    "ext-couchbase": "*",
     "php": ">=7.0",
     "symfony/console": "3.4.*",
     "symfony/symfony": "3.4.*"
@@ -15,7 +16,7 @@
   "autoload": {
     "psr-4": { "BowlOfSoup\\CouchbaseMigrationsBundle\\": "src" }
   },
-  "dev-autoload": {
+  "autoload-dev": {
     "psr-4": { "BowlOfSoup\\CouchbaseMigrationsBundle\\Tests\\": "tests" }
   }
 }

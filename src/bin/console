@@ -24,9 +24,11 @@ $loader->load('../Resources/config/services.yml');
 
 $application = new Application();
 
+$application->add($containerBuilder->get('BowlOfSoup\CouchbaseMigrationsBundle\Command\CreateBucketCommand'));
 $application->add($containerBuilder->get('BowlOfSoup\CouchbaseMigrationsBundle\Command\ExecuteCommand'));
 $application->add($containerBuilder->get('BowlOfSoup\CouchbaseMigrationsBundle\Command\FlushDataCommand'));
 $application->add($containerBuilder->get('BowlOfSoup\CouchbaseMigrationsBundle\Command\GenerateCommand'));
 $application->add($containerBuilder->get('BowlOfSoup\CouchbaseMigrationsBundle\Command\MigrateCommand'));
+$application->add($containerBuilder->get('BowlOfSoup\CouchbaseMigrationsBundle\Command\RemoveBucketCommand'));
 
 $application->run();

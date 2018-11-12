@@ -13,6 +13,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+/**
+ * Flushes all data in a Couchbase bucket, except the migrations document.
+ */
 class FlushDataCommand extends Command
 {
     const INPUT_BUCKET = 'bucket';

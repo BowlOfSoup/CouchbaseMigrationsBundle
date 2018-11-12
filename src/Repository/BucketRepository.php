@@ -44,7 +44,15 @@ class BucketRepository
 
         return array_map(
             function ($row) {
-                return $row[$this->bucketFactory->getBucketName()];
+                if (1 === count($row)) {
+                    return reset($row);
+                }
+
+                if (array_key_exists($this->bucketFactory->getBucketName(), $row)) {
+                    return $row[$this->bucketFactory->getBucketName()];
+                }
+
+                return $row;
             },
             $result->rows
         );

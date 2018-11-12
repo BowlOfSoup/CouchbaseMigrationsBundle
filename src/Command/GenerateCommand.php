@@ -6,6 +6,9 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Generate a blank couchbase migration.
+ */
 class GenerateCommand extends Command
 {
     const DIRECTORY_MIGRATIONS = '/app/CouchbaseMigrations';

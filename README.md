@@ -64,7 +64,7 @@ The configured bucket (`bucket_migrations` in the config file) will contain a do
 
 #### Execute a single migration
 
-    bin/console couchbase:migrations:execute VERSION_NUMBER
+    bin/console couchbase:migrations:execute VERSION_NUMBER [--no-verbose] [--down]
     
 This will execute the given version (file in `app/CouchbaseMigrations`).
 Replace `VERSION_NUMBER` with the version (**date-time part** of the file) you want to execute.
@@ -75,7 +75,7 @@ You can execute a version indefinitely: will not be kept track of.
     bin/console couchbase:migrations:flush-data BUCKET_NAME
 
 Flushes all the data in a bucket, if flushing is enabled for that bucket, except the migrations version document.
-Replace `BUCKET_NAME` with the name of the bucket for which you want the data to be flushed.
+Replace `BUCKET_NAME` with the name of the bucket for which you want the data to be flushed. Defaults to the configured bucket.
 
 Can be handy if you want to reset all data in a bucket, but do not want to lose your migrations.
 
@@ -86,8 +86,8 @@ When you have generated a migration, open the file and use the `up` function. Ex
 ```
 public function up()
 {
-    // You can omit the selectBucket() method if you want to use the bucket configured in the config.yml.
-    $this->selectBucket();
+    // Use only if you want to select a different bucket than the one configured.
+    $this->selectBucket('some-other-bucket-name');
 
     $this->bucketRepository->query(
         'CREATE INDEX `i_someindexname` ON `bucketname`(`propertyname`) WHERE (`someotherpropertyname` = "propertycontent")'
@@ -100,12 +100,24 @@ or
 ```
 public function up()
 {
-    $bucket = $this->selectBucket('optional-bucket-name');
+    // Use only if you want to select a different bucket than the one configured.
+    $bucket = $this->selectBucket('some-other-bucket-name');
 
     $result = $bucket->get('some-document-key');
     $documentContent = $result->value;
 
     $bucket->insert('some-other-document-key', $documentContent);
+}
+```
+
+Downgrading is also supported for the **execute** command, just add a method `down()` to the migration.
+
+```
+public function down()
+{
+    $this->bucketRepository->query(
+        'the opposite of the up() query'
+    );
 }
 ```
 

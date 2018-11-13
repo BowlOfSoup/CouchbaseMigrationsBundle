@@ -79,6 +79,19 @@ Replace `BUCKET_NAME` with the name of the bucket for which you want the data to
 
 Can be handy if you want to reset all data in a bucket, but do not want to lose your migrations.
 
+#### Create a bucket
+
+    bin/console couchbase:migrations:create-bucket [BUCKET_NAME] [--index]
+
+Creates a bucket, optional name (takes default configured) and optionally creating a primary index.
+
+#### Remove a bucket
+
+    bin/console couchbase:migrations:remove-bucket [BUCKET_NAME]
+
+Creates a bucket, optional name (takes default configured).
+
+
 How to write a migration
 ------------------------
 When you have generated a migration, open the file and use the `up` function. Example:

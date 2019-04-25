@@ -11,7 +11,6 @@ Prerequisites
 -------------
 * PHP 7.0 or higher
 * Couchbase SDK for PHP installed ([How to install](https://developer.couchbase.com/documentation/server/current/sdk/php/start-using-sdk.html)).
-* symfony/symfony 3.4.*
 
 Installation and setup
 ----------------------
@@ -145,13 +144,15 @@ You can use this bundle as standalone application, so, not use it within a Symfo
 This is also perfect for development.
 
 * Checkout this repository and create an `app` directory within the `src` directory.
-* Create a `app/CouchbaseMigrations` directory.
-* Create a `app/parameters.yml` which holds the config parameters.
+* Create a `src/app/CouchbaseMigrations` directory.
+* Create a `src/app/parameters.yml` which holds the config parameters.
 
-Fill the `app/parameters.yml` file with:
+Fill the `src/app/parameters.yml` file with:
 
     parameters:
       kernel.project_dir:
+
+      couchbase_bucket:
 
       couchbase_migrations.bucket_migrations:
       couchbase_migrations.host:

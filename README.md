@@ -1,16 +1,15 @@
 Couchbase Migrations Bundle
 ===========================
 
-With this Symfony bundle you can generate and execute migrations a Couchbase database. 
+With this Symfony bundle you can generate and execute migrations on a Couchbase database.
 It works kind of like [Doctrine Migrations](https://github.com/doctrine/migrations).
 * Generate blank migrations and fill them to e.g. make new indexes on buckets or upsert/remove documents.
-* It keeps in check which migrations have already been executed and which still need to be done.
+* It keeps in check which migrations that have already been executed and which still need to be done.
 * Usable via Symfony commands.
 
 Prerequisites
 -------------
-* PHP 7.0 or higher
-* Couchbase SDK for PHP installed ([How to install](https://developer.couchbase.com/documentation/server/current/sdk/php/start-using-sdk.html)).
+* PHP 8.3 or higher with Couchbase extension
 
 Installation and setup
 ----------------------
@@ -28,9 +27,9 @@ Add the bundle to your `AppKernel.php`.
     
 Create a `CouchbaseMigrations` directory in your `app` directory. This will contain all the generated blank migrations.
 
-    $ mkdir app/CouchbaseMigrations
+    $ mkdir CouchbaseMigrations
     
-Add the correct parameters in `app/config/config.yml`. 
+Add the `config/packages/couchbase_migrations_bundle.yaml`.
 
     couchbase_migrations:
         host:
@@ -51,7 +50,7 @@ Usage
 
     bin/console couchbase:migrations:generate
 
-This will generate a blank migration file in `app/CouchbaseMigrations` for you to fill.
+This will generate a blank migration file in `CouchbaseMigrations/` for you to fill.
 
 #### Migrate all
 
@@ -65,7 +64,7 @@ The configured bucket (`bucket_migrations` in the config file) will contain a do
 
     bin/console couchbase:migrations:execute VERSION_NUMBER [--no-verbose] [--down]
     
-This will execute the given version (file in `app/CouchbaseMigrations`).
+This will execute the given version (file in `CouchbaseMigrations/`).
 Replace `VERSION_NUMBER` with the version (**date-time part** of the file) you want to execute.
 You can execute a version indefinitely: will not be kept track of.
 
@@ -137,6 +136,10 @@ So:
 * The `$this->bucketRepository` can be used to make it easier to do queries on a bucket (like named parameters).
 * You can also directly do actions on the bucket by using the return value of `$this->selectBucket()`.
 
+Note: The Bucket returned by `selectBucket()` and the result returned by `$bucket->get()` are both small backwards-
+compatible classes to not break old migrations defined with the previous version of this bundle. If you need the actual
+Couchbase Bucket, you can use `$bucket->getBucket()`, if you need the actual Couchbase result you can get that by calling
+`$result->getResult()`.
 
 How to use as standalone application
 ------------------------------------
@@ -144,7 +147,7 @@ You can use this bundle as standalone application, so, not use it within a Symfo
 This is also perfect for development.
 
 * Checkout this repository and create an `app` directory within the `src` directory.
-* Create a `src/app/CouchbaseMigrations` directory.
+* Create a `src/CouchbaseMigrations` directory.
 * Create a `src/app/parameters.yml` which holds the config parameters.
 
 Fill the `src/app/parameters.yml` file with:

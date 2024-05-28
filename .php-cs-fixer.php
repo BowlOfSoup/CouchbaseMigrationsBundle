@@ -12,7 +12,7 @@ final class CustomFinder extends Finder
     /** @var array */
     private $excludes = array(
         'vendor',
-        'app/CouchbaseMigrations',
+        'CouchbaseMigrations',
     );
 
     /** @var \PhpCsFixer\Console\ConfigurationResolver|null */
@@ -228,28 +228,28 @@ final class CustomFinder extends Finder
     }
 }
 
-/* Based on dev-master|^2.0 of php-cs-fixer */
-return Config::create('BowlOfSoup', 'BowlOfSoup coding standards')
+$config = new Config('BowlOfSoup', 'BowlOfSoup coding standards');
+$config
     ->setUsingCache(true)
     ->setRiskyAllowed(true)
-    ->setRules(array(
+    ->setRules([
         // default
         '@PSR2' => true,
         '@Symfony' => true,
         // additionally, @see https://github.com/FriendsOfPHP/PHP-CS-Fixer/blob/master/README.rst
-        'concat_space' => array('spacing' => 'one'),
-        'array_syntax' => array('syntax' => 'short'),
+        'concat_space' => ['spacing' => 'one'],
+        'array_syntax' => ['syntax' => 'short'],
         'blank_line_after_opening_tag' => true,
         'no_blank_lines_before_namespace' => false,
         'ordered_imports' => true,
         'phpdoc_align' => false,
-        'phpdoc_inline_tag' => false,
+        'general_phpdoc_tag_rename' => false,
+        'phpdoc_inline_tag_normalizer' => false,
+        'phpdoc_tag_type' => false,
         'phpdoc_order' => true,
         'simplified_null_return' => false,
-        'binary_operator_spaces' => array(
-            'align_double_arrow' => false,
-            'align_equals' => false
-        ),
         'no_unused_imports' => true,
-    ))
+    ])
     ->setFinder(CustomFinder::create());
+
+return $config;

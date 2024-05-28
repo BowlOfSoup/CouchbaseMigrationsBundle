@@ -180,3 +180,11 @@ You are more then welcome to fork this repository, make changes and create a pul
 * Create an issue and state the changes you want to make.
 * In your commit messages, refer to this issue.
 * Be sure to run `vendor/bin/php-cs-fixer fix` before you commit code changes. This will make the changed code adhere to the coding standards.
+
+Upgrading to 2.x
+----------------
+
+When you're upgrading from version 1.0, you need to do two things:
+
+- Update the configuration according to the above information
+- Move the path of the migrations. The `app/` directory is gone in new Symfony versions, the `CouchbaseMigrations` folder should now be in the root of your project

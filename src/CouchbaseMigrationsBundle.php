@@ -2,8 +2,8 @@
 
 namespace BowlOfSoup\CouchbaseMigrationsBundle;
 
-use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 
-class CouchbaseMigrationsBundle extends Bundle
+class CouchbaseMigrationsBundle extends AbstractBundle
 {
 }

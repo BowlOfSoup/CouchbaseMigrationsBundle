@@ -7,24 +7,16 @@ use Symfony\Component\Finder\SplFileInfo;
 
 class MigrationFactory
 {
-    /** @var \BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory */
-    private $clusterFactory;
+    private ClusterFactory $clusterFactory;
 
-    /**
-     * @param \BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory $clusterFactory
-     */
     public function __construct(ClusterFactory $clusterFactory)
     {
         $this->clusterFactory = $clusterFactory;
     }
 
     /**
-     * @param \Symfony\Component\Finder\SplFileInfo $file
-     *
      * @throws \InvalidArgumentException
      * @throws \ReflectionException
-     *
-     * @return \BowlOfSoup\CouchbaseMigrationsBundle\Migration\AbstractMigration
      */
     public function createByFile(SplFileInfo $file): AbstractMigration
     {

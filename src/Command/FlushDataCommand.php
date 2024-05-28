@@ -6,6 +6,10 @@ namespace BowlOfSoup\CouchbaseMigrationsBundle\Command;
 
 use BowlOfSoup\CouchbaseMigrationsBundle\Factory\BucketFactory;
 use BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory;
+use Couchbase\Exception\CouchbaseException;
+use Couchbase\Exception\DocumentExistsException;
+use Couchbase\Exception\DocumentNotFoundException;
+use Couchbase\Exception\TimeoutException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,12 +24,8 @@ class FlushDataCommand extends Command
 {
     const INPUT_BUCKET = 'bucket';
 
-    /** @var \BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory */
-    protected $clusterFactory;
+    protected ClusterFactory $clusterFactory;
 
-    /**
-     * @param \BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory $clusterFactory
-     */
     public function __construct(
         ClusterFactory $clusterFactory
     ) {
@@ -34,7 +34,7 @@ class FlushDataCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('couchbase:migrations:flush-data')
@@ -43,38 +43,34 @@ class FlushDataCommand extends Command
     }
 
     /**
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
-     * @throws \BowlOfSoup\CouchbaseMigrationsBundle\Exception\BucketNoAccessException
+     * @throws CouchbaseException
+     * @throws DocumentExistsException
+     * @throws DocumentNotFoundException
+     * @throws TimeoutException
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $bucketName = $input->getArgument(static::INPUT_BUCKET) ?? $this->clusterFactory->getDefaultBucketName();
 
         if (!$this->userConfirmation($bucketName, $input, $output)) {
-            return;
+            return self::FAILURE;
         }
 
         $bucketFactory = new BucketFactory($this->clusterFactory, $bucketName);
         $bucket = $bucketFactory->getBucket();
 
-        $migrationsVersionsDocumentContent = $bucket->get(MigrateCommand::DOCUMENT_VERSIONS);
+        $migrationsVersionsDocumentContent = $bucket->defaultCollection()->get(MigrateCommand::DOCUMENT_VERSIONS);
 
-        $bucket->manager()->flush();
-        $bucket->insert(MigrateCommand::DOCUMENT_VERSIONS, $migrationsVersionsDocumentContent->value);
+        $bucketManager = $this->clusterFactory->getCluster()->buckets();
+        $bucketManager->flush($bucketName);
+        $bucket->defaultCollection()->insert(MigrateCommand::DOCUMENT_VERSIONS, $migrationsVersionsDocumentContent->content());
 
         $io = new SymfonyStyle($input, $output);
         $io->success(sprintf('Flushed all data for: %s.', $bucketName));
+
+        return self::SUCCESS;
     }
 
-    /**
-     * @param string $bucketName
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
-     * @return bool
-     */
     private function userConfirmation(string $bucketName, InputInterface $input, OutputInterface $output): bool
     {
         $io = new SymfonyStyle($input, $output);

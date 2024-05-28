@@ -20,16 +20,11 @@ class ExecuteCommand extends Command
     const INPUT_VERSION = 'version';
     const OPTION_MIGRATE_DOWN = 'down';
 
-    /** @var string */
-    private $migrationsDirectory;
+    private string $migrationsDirectory;
 
-    /** @var \BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory */
-    private $clusterFactory;
+    private ClusterFactory $clusterFactory;
 
     /**
-     * @param string $projectDirectory
-     * @param \BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory $clusterFactory
-     *
      * @throws \Symfony\Component\Console\Exception\LogicException
      */
     public function __construct(
@@ -46,7 +41,7 @@ class ExecuteCommand extends Command
      * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
      * @throws \Symfony\Component\Console\Exception\LogicException
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('couchbase:migrations:execute')
@@ -56,15 +51,12 @@ class ExecuteCommand extends Command
     }
 
     /**
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
      * @throws \InvalidArgumentException
      * @throws \LogicException
      * @throws \ReflectionException
      * @throws \BowlOfSoup\CouchbaseMigrationsBundle\Exception\BucketNoAccessException
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
@@ -76,7 +68,7 @@ class ExecuteCommand extends Command
         if (!$finder->hasResults()) {
             $io->error(sprintf('Migration: %s does not exist in %s.', $fileName, $this->migrationsDirectory));
 
-            return;
+            return self::FAILURE;
         }
 
         $migrationFactory = new MigrationFactory($this->clusterFactory);
@@ -95,5 +87,7 @@ class ExecuteCommand extends Command
         }
 
         $io->success('Migration done.');
+
+        return self::SUCCESS;
     }
 }

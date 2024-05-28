@@ -11,14 +11,10 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class GenerateCommand extends Command
 {
-    const DIRECTORY_MIGRATIONS = '/app/CouchbaseMigrations';
+    const DIRECTORY_MIGRATIONS = '/CouchbaseMigrations';
 
-    /** @var string */
-    private $migrationsDirectory;
+    private string $migrationsDirectory;
 
-    /**
-     * @param string $projectDirectory
-     */
     public function __construct(
         string $projectDirectory
     ) {
@@ -27,18 +23,14 @@ class GenerateCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('couchbase:migrations:generate')
             ->setDescription('Generate a blank couchbase migration.');
     }
 
-    /**
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $version = date('YmdHis');
         $code = str_replace(['%version%'], [date('YmdHis')], file_get_contents(__DIR__ . '/../Resources/templates/Migration.tmp'));
@@ -51,5 +43,7 @@ class GenerateCommand extends Command
         file_put_contents($this->migrationsDirectory . $file, $code);
 
         $output->writeln(PHP_EOL . sprintf('Generated new migration to "<info>%s</info>"', static::DIRECTORY_MIGRATIONS . $file) . PHP_EOL);
+
+        return self::SUCCESS;
     }
 }

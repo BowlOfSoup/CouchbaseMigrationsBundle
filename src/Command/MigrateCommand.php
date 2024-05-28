@@ -7,7 +7,7 @@ use BowlOfSoup\CouchbaseMigrationsBundle\Factory\BucketFactory;
 use BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory;
 use BowlOfSoup\CouchbaseMigrationsBundle\Factory\MigrationFactory;
 use Couchbase\Bucket;
-use Couchbase\Exception;
+use Couchbase\Exception\CouchbaseException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -23,20 +23,13 @@ class MigrateCommand extends Command
     const OPTION_NO_VERBOSE = 'no-verbose';
     const DOCUMENT_VERSIONS = 'migrations::versions';
 
-    /** @var string */
-    private $migrationsDirectory;
+    private string $migrationsDirectory;
 
-    /** @var string */
-    private $migrationsBucket;
+    private string $migrationsBucket;
 
-    /** @var \BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory */
-    private $clusterFactory;
+    private ClusterFactory $clusterFactory;
 
     /**
-     * @param string $projectDirectory
-     * @param string $migrationsBucket
-     * @param \BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory $clusterFactory
-     *
      * @throws \Symfony\Component\Console\Exception\LogicException
      */
     public function __construct(
@@ -54,7 +47,7 @@ class MigrateCommand extends Command
     /**
      * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('couchbase:migrations:migrate')
@@ -63,15 +56,12 @@ class MigrateCommand extends Command
     }
 
     /**
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
      * @throws \BowlOfSoup\CouchbaseMigrationsBundle\Exception\BucketNoAccessException
      * @throws \InvalidArgumentException
      * @throws \LogicException
      * @throws \ReflectionException
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
@@ -88,10 +78,11 @@ class MigrateCommand extends Command
                 $io->warning('Nothing to execute.');
             }
 
-            return;
+            return self::FAILURE;
         }
 
         $migrationsBucket = $this->getMigrationsBucket();
+
         $doneVersions = $this->getVersions($migrationsBucket);
         $migrationFactory = new MigrationFactory($this->clusterFactory);
 
@@ -106,7 +97,7 @@ class MigrateCommand extends Command
             $migration->up();
 
             array_push($doneVersions, get_class($migration));
-            $migrationsBucket->upsert(static::DOCUMENT_VERSIONS, $doneVersions);
+            $migrationsBucket->defaultCollection()->upsert(static::DOCUMENT_VERSIONS, $doneVersions);
 
             if (!$input->getOption(static::OPTION_NO_VERBOSE)) {
                 $io->writeln(sprintf('Executed migration: <info>%s</info>.', get_class($migration)));
@@ -116,36 +107,27 @@ class MigrateCommand extends Command
         if (!$input->getOption(static::OPTION_NO_VERBOSE)) {
             $io->success('Migrations done.');
         }
+
+        return self::SUCCESS;
     }
 
     /**
      * @throws \BowlOfSoup\CouchbaseMigrationsBundle\Exception\BucketNoAccessException
-     *
-     * @return \Couchbase\Bucket
      */
-    private function getMigrationsBucket()
+    private function getMigrationsBucket(): Bucket
     {
-        try {
-            return (new BucketFactory($this->clusterFactory, $this->migrationsBucket))->getBucket();
-        } catch (BucketNoAccessException $e) {
-            throw new BucketNoAccessException(sprintf(BucketNoAccessException::BUCKET_MIGRATIONS_CANNOT_BE_ACCESSED, $this->migrationsBucket));
-        }
+        return (new BucketFactory($this->clusterFactory, $this->migrationsBucket))->getBucket();
     }
 
-    /**
-     * @param \Couchbase\Bucket $migrationsBucket
-     *
-     * @return array
-     */
-    private function getVersions(Bucket $migrationsBucket)
+    private function getVersions(Bucket $migrationsBucket): array
     {
         try {
-            $result = $migrationsBucket->get(static::DOCUMENT_VERSIONS);
+            $result = $migrationsBucket->defaultCollection()->get(static::DOCUMENT_VERSIONS);
 
-            return $result->value;
-        } catch (Exception $e) {
+            return $result->content();
+        } catch (CouchbaseException $e) {
             // This occurs when the document containing the versions can't be found. Create an empty document.
-            $migrationsBucket->upsert(static::DOCUMENT_VERSIONS, []);
+            $migrationsBucket->defaultCollection()->upsert(static::DOCUMENT_VERSIONS, []);
 
             return [];
         }

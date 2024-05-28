@@ -7,6 +7,7 @@ namespace BowlOfSoup\CouchbaseMigrationsBundle\Command;
 use BowlOfSoup\CouchbaseMigrationsBundle\Factory\BucketFactory;
 use BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory;
 use BowlOfSoup\CouchbaseMigrationsBundle\Repository\BucketRepository;
+use Couchbase\Cluster;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,23 +23,17 @@ class CreateBucketCommand extends Command
     const ARGUMENT_BUCKET_NAME = 'bucket';
     const OPTION_CREATE_INDEX = 'index';
 
-    /** @var \BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory */
-    private $clusterFactory;
+    private ClusterFactory $clusterFactory;
 
-    /** @var \Couchbase\Cluster */
-    private $cluster;
+    private Cluster $cluster;
 
-    /** @var string */
-    private $username;
+    private string $username;
 
-    /** @var string */
-    private $password;
+    private string $password;
 
-    /** @var string */
-    private $bucketName;
+    private string $bucketName;
 
-    /** @var array */
-    private $bucketOptions = [
+    private array $bucketOptions = [
         'bucketType' => 'couchbase',
         'ramQuotaMB' => 128,
         'saslPassword' => '',
@@ -47,12 +42,6 @@ class CreateBucketCommand extends Command
         'replicaIndex' => false
     ];
 
-    /**
-     * @param \BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory $clusterFactory
-     * @param string $username
-     * @param string $password
-     * @param string $bucketName
-     */
     public function __construct(
         ClusterFactory $clusterFactory,
         string $username,
@@ -72,7 +61,7 @@ class CreateBucketCommand extends Command
      * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
      * @throws \Symfony\Component\Console\Exception\LogicException
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('couchbase:migrations:create-bucket')
@@ -82,12 +71,9 @@ class CreateBucketCommand extends Command
     }
 
     /**
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
      * @throws \BowlOfSoup\CouchbaseMigrationsBundle\Exception\BucketNoAccessException
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
@@ -97,11 +83,11 @@ class CreateBucketCommand extends Command
         }
 
         try {
-            $this->cluster->openBucket($bucketName);
+            $this->cluster->bucket($bucketName);
 
             $io->warning(sprintf('Bucket \'%s\' already exists', $bucketName));
         } catch (\Throwable $e) {
-            $clusterManager = $this->cluster->manager($this->username, $this->password);
+            $clusterManager = $this->cluster->buckets();
             $clusterManager->createBucket($bucketName, $this->bucketOptions);
 
             // We wait until Couchbase actually created the bucket.
@@ -113,17 +99,14 @@ class CreateBucketCommand extends Command
 
             $io->success(sprintf('Bucket \'%s\' created.', $bucketName));
         }
+
+        return self::SUCCESS;
     }
 
-    /**
-     * @param string $bucketName
-     *
-     * @throws \BowlOfSoup\CouchbaseMigrationsBundle\Exception\BucketNoAccessException
-     */
-    private function createPrimaryIndex(string $bucketName)
+    private function createPrimaryIndex(string $bucketName): void
     {
         $bucketFactory = new BucketFactory($this->clusterFactory, $bucketName);
-        $bucketRepository = new BucketRepository($bucketFactory);
+        $bucketRepository = new BucketRepository($bucketFactory, $this->clusterFactory->getCluster());
 
         $bucketRepository->query(
             sprintf('CREATE PRIMARY INDEX ON `%s` USING GSI', $bucketName)

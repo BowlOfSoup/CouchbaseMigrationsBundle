@@ -32,11 +32,19 @@ Create a `CouchbaseMigrations` directory in your `app` directory. This will cont
 Add the `config/packages/couchbase_migrations_bundle.yaml`.
 
     couchbase_migrations:
-        host:
-        user:
-        password:
-        bucket_migrations:
-        bucket_default:
+        host: '%env(COUCHBASE_MIGRATIONS_HOST)%'
+        user: '%env(COUCHBASE_MIGRATIONS_USER)%'
+        password: '%env(COUCHBASE_MIGRATIONS_PASSWORD)%'
+        bucket_migrations: '%env(COUCHBASE_MIGRATIONS_BUCKET_MIGRATIONS)%'
+        bucket_default: '%env(COUCHBASE_MIGRATIONS_DEFAULT_BUCKET)%'
+
+In your .env file, define the above values:
+
+    COUCHBASE_MIGRATIONS_HOST="127.0.0.1"
+    COUCHBASE_MIGRATIONS_USER="couchbase_user"
+    COUCHBASE_MIGRATIONS_PASSWORD="couchbase_password"
+    COUCHBASE_MIGRATIONS_BUCKET_MIGRATIONS="default"
+    COUCHBASE_MIGRATIONS_DEFAULT_BUCKET="default"
 
 * **`bucket_migrations`** must hold the bucket in which you want to store which migration has already been done.
 Not mandatory, but then a bucket named `migrations` must be accessible.

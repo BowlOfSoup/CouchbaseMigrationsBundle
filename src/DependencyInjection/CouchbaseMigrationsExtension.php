@@ -9,11 +9,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class CouchbaseMigrationsExtension extends Extension
 {
-    /**
-     * @param array $configs
-     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
-     */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);

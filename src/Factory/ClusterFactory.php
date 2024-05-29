@@ -4,18 +4,15 @@ namespace BowlOfSoup\CouchbaseMigrationsBundle\Factory;
 
 use BowlOfSoup\CouchbaseMigrationsBundle\Model\ConnectionSettings;
 use Couchbase\Cluster;
-use Couchbase\PasswordAuthenticator;
+use Couchbase\ClusterOptions;
 
 class ClusterFactory
 {
-    /** @var \BowlOfSoup\CouchbaseMigrationsBundle\Model\ConnectionSettings */
-    private $connectionSettings;
+    private ConnectionSettings $connectionSettings;
 
-    /** @var string */
-    private $defaultBucketName;
+    private string $defaultBucketName;
 
-    /** @var \Couchbase\Cluster */
-    private $cluster;
+    private ?Cluster $cluster = null;
 
     /**
      * @param \BowlOfSoup\CouchbaseMigrationsBundle\Model\ConnectionSettings $connectionSettings
@@ -29,9 +26,6 @@ class ClusterFactory
         $this->defaultBucketName = $defaultBucketName;
     }
 
-    /**
-     * @return \Couchbase\Cluster
-     */
     public function getCluster(): Cluster
     {
         if (null !== $this->cluster) {
@@ -42,26 +36,16 @@ class ClusterFactory
             ? $this->connectionSettings->getHost() . ':' . $this->connectionSettings->getPort()
             : $this->connectionSettings->getHost();
 
-        $this->cluster = new Cluster('couchbase://' . $host);
+        $options = new ClusterOptions();
+        $options->credentials($this->connectionSettings->getUser(), $this->connectionSettings->getPassword());
 
-        $this->authenticateForCluster();
+        $this->cluster = new Cluster('couchbase://' . $host, $options);
 
         return $this->cluster;
     }
 
-    /**
-     * @return string
-     */
-    public function getDefaultBucketName()
+    public function getDefaultBucketName(): string
     {
         return $this->defaultBucketName;
-    }
-
-    private function authenticateForCluster()
-    {
-        $authenticator = new PasswordAuthenticator();
-        $authenticator->username($this->connectionSettings->getUser())->password($this->connectionSettings->getPassword());
-
-        $this->cluster->authenticate($authenticator);
     }
 }

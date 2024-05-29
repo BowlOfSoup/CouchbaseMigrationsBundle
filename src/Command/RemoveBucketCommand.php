@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BowlOfSoup\CouchbaseMigrationsBundle\Command;
 
 use BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory;
+use Couchbase\Cluster;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,24 +19,14 @@ class RemoveBucketCommand extends Command
 {
     const ARGUMENT_BUCKET_NAME = 'bucket';
 
-    /** @var \Couchbase\Cluster */
-    private $cluster;
+    private Cluster $cluster;
 
-    /** @var string */
-    private $username;
+    private string $username;
 
-    /** @var string */
-    private $password;
+    private string $password;
 
-    /** @var string */
-    private $bucketName;
+    private string $bucketName;
 
-    /**
-     * @param \BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory $clusterFactory
-     * @param string $username
-     * @param string $password
-     * @param string $bucketName
-     */
     public function __construct(
         ClusterFactory $clusterFactory,
         string $username,
@@ -54,7 +45,7 @@ class RemoveBucketCommand extends Command
      * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
      * @throws \Symfony\Component\Console\Exception\LogicException
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('couchbase:migrations:remove-bucket')
@@ -62,11 +53,7 @@ class RemoveBucketCommand extends Command
             ->addArgument(static::ARGUMENT_BUCKET_NAME, InputArgument::OPTIONAL, 'Name of the bucket your want to remove.');
     }
 
-    /**
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
@@ -76,15 +63,19 @@ class RemoveBucketCommand extends Command
         }
 
         try {
-            $this->cluster->openBucket($bucketName);
+            $this->cluster->bucket($bucketName);
 
-            $clusterManager = $this->cluster->manager($this->username, $this->password);
+            $clusterManager = $this->cluster->buckets();
             $clusterManager->removeBucket($bucketName);
 
             $io->success(sprintf('Bucket \'%s\' removed.', $bucketName));
+
+            return self::SUCCESS;
         } catch (\Throwable $e) {
 
             $io->warning(sprintf('Bucket \'%s\' does not exist', $bucketName));
+
+            return self::FAILURE;
         }
     }
 }

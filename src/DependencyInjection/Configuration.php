@@ -8,10 +8,10 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 class Configuration implements ConfigurationInterface
 {
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('couchbase_migrations');
+        $treeBuilder = new TreeBuilder('couchbase_migrations');
+        $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
             ->children()

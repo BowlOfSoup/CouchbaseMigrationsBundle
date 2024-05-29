@@ -4,25 +4,15 @@ namespace BowlOfSoup\CouchbaseMigrationsBundle\Model;
 
 class ConnectionSettings
 {
-    /** @var string */
-    private $host;
+    private string $host;
 
-    /** @var string */
-    private $user;
+    private string $user;
 
-    /** @var string */
-    private $password;
+    private string $password;
 
-    /** @var int */
-    private $port;
+    private ?int $port;
 
-    /**
-     * @param string $host
-     * @param string $user
-     * @param string $password
-     * @param int $port
-     */
-    public function __construct(string $host, string $user, string $password, int $port = null)
+    public function __construct(string $host, string $user, string $password, ?int $port = null)
     {
         $this->host = $host;
         $this->user = $user;
@@ -30,34 +20,22 @@ class ConnectionSettings
         $this->port = $port;
     }
 
-    /**
-     * @return string
-     */
     public function getHost(): string
     {
         return $this->host;
     }
 
-    /**
-     * @return string
-     */
     public function getUser(): string
     {
         return $this->user;
     }
 
-    /**
-     * @return string
-     */
     public function getPassword(): string
     {
         return $this->password;
     }
 
-    /**
-     * @return int
-     */
-    public function getPort()
+    public function getPort(): int
     {
         return $this->port;
     }

@@ -2,57 +2,36 @@
 
 namespace BowlOfSoup\CouchbaseMigrationsBundle\Factory;
 
-use BowlOfSoup\CouchbaseMigrationsBundle\Exception\BucketNoAccessException;
 use Couchbase\Bucket;
-use Couchbase\Exception;
 
 class BucketFactory
 {
     const BUCKET_MIGRATIONS = 'migrations';
 
-    /** @var \BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory */
-    private $clusterFactory;
+    private ClusterFactory $clusterFactory;
 
-    /** @var string */
-    private $bucketName;
+    private string $bucketName;
 
-    /** @var \Couchbase\Bucket */
-    private $bucket;
+    private ?Bucket $bucket = null;
 
-    /**
-     * @param \BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory $clusterFactory
-     * @param string $bucketName
-     */
     public function __construct(ClusterFactory $clusterFactory, string $bucketName)
     {
         $this->clusterFactory = $clusterFactory;
         $this->bucketName = $bucketName;
     }
 
-    /**
-     * @return string
-     */
-    public function getBucketName()
+    public function getBucketName(): string
     {
         return $this->bucketName;
     }
 
-    /**
-     * @throws \BowlOfSoup\CouchbaseMigrationsBundle\Exception\BucketNoAccessException
-     *
-     * @return \Couchbase\Bucket
-     */
     public function getBucket(): Bucket
     {
         if (null !== $this->bucket) {
             return $this->bucket;
         }
 
-        try {
-            $this->bucket = $this->clusterFactory->getCluster()->openBucket($this->bucketName);
-        } catch (Exception $e) {
-            throw new BucketNoAccessException(sprintf(BucketNoAccessException::BUCKET_CANNOT_BE_ACCESSED, $this->bucketName));
-        }
+        $this->bucket = $this->clusterFactory->getCluster()->bucket($this->bucketName);
 
         return $this->bucket;
     }

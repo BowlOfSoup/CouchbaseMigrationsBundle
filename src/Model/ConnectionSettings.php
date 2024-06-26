@@ -35,7 +35,7 @@ class ConnectionSettings
         return $this->password;
     }
 
-    public function getPort(): int
+    public function getPort(): ?int
     {
         return $this->port;
     }

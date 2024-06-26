@@ -38,6 +38,11 @@ Add the `config/packages/couchbase_migrations_bundle.yaml`.
         bucket_migrations: '%env(COUCHBASE_MIGRATIONS_BUCKET_MIGRATIONS)%'
         bucket_default: '%env(COUCHBASE_MIGRATIONS_DEFAULT_BUCKET)%'
 
+Optional you can also configure the port if it is not standard.
+
+    couchbase_migrations:
+        port: '%env(COUCHBASE_MIGRATIONS_PORT)%'
+
 In your .env file, define the above values:
 
     COUCHBASE_MIGRATIONS_HOST="127.0.0.1"

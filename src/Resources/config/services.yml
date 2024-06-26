@@ -1,64 +1,65 @@
 services:
-    BowlOfSoup\CouchbaseMigrationsBundle\Command\CreateBucketCommand:
-        class: BowlOfSoup\CouchbaseMigrationsBundle\Command\CreateBucketCommand
-        arguments:
-        - '@BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory'
-        - %couchbase_migrations.user%
-        - %couchbase_migrations.password%
-        - %couchbase_migrations.bucket_default%
-        tags:
-        - { name: 'console.command' }
+  BowlOfSoup\CouchbaseMigrationsBundle\Command\CreateBucketCommand:
+    class: BowlOfSoup\CouchbaseMigrationsBundle\Command\CreateBucketCommand
+    arguments:
+      $clusterFactory: '@BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory'
+      $username: '%couchbase_migrations.user%'
+      $password: '%couchbase_migrations.password%'
+      $bucketName: '%couchbase_migrations.bucket_default%'
+    tags:
+      - { name: 'console.command' }
 
-    BowlOfSoup\CouchbaseMigrationsBundle\Command\ExecuteCommand:
-      class: BowlOfSoup\CouchbaseMigrationsBundle\Command\ExecuteCommand
-      arguments:
-        - %kernel.project_dir%
-        - '@BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory'
-      tags:
-        - { name: 'console.command' }
+  BowlOfSoup\CouchbaseMigrationsBundle\Command\ExecuteCommand:
+    class: BowlOfSoup\CouchbaseMigrationsBundle\Command\ExecuteCommand
+    arguments:
+      $projectDirectory: '%kernel.project_dir%'
+      $clusterFactory: '@BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory'
+    tags:
+      - { name: 'console.command' }
 
-    BowlOfSoup\CouchbaseMigrationsBundle\Command\FlushDataCommand:
-      class: BowlOfSoup\CouchbaseMigrationsBundle\Command\FlushDataCommand
-      arguments:
-        - '@BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory'
-      tags:
-        - { name: 'console.command' }
+  BowlOfSoup\CouchbaseMigrationsBundle\Command\FlushDataCommand:
+    class: BowlOfSoup\CouchbaseMigrationsBundle\Command\FlushDataCommand
+    arguments:
+      $clusterFactory: '@BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory'
+    tags:
+      - { name: 'console.command' }
 
-    BowlOfSoup\CouchbaseMigrationsBundle\Command\GenerateCommand:
-      class: BowlOfSoup\CouchbaseMigrationsBundle\Command\GenerateCommand
-      arguments:
-        - %kernel.project_dir%
-      tags:
-        - { name: 'console.command' }
+  BowlOfSoup\CouchbaseMigrationsBundle\Command\GenerateCommand:
+    class: BowlOfSoup\CouchbaseMigrationsBundle\Command\GenerateCommand
+    arguments:
+      $projectDirectory: '%kernel.project_dir%'
+    tags:
+      - { name: 'console.command' }
 
-    BowlOfSoup\CouchbaseMigrationsBundle\Command\MigrateCommand:
-      class: BowlOfSoup\CouchbaseMigrationsBundle\Command\MigrateCommand
-      arguments:
-        - %kernel.project_dir%
-        - %couchbase_migrations.bucket_migrations%
-        - '@BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory'
-      tags:
-        - { name: 'console.command' }
+  BowlOfSoup\CouchbaseMigrationsBundle\Command\MigrateCommand:
+    class: BowlOfSoup\CouchbaseMigrationsBundle\Command\MigrateCommand
+    arguments:
+      $projectDirectory: '%kernel.project_dir%'
+      $migrationsBucket: '%couchbase_migrations.bucket_migrations%'
+      $clusterFactory: '@BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory'
+    tags:
+      - { name: 'console.command' }
 
-    BowlOfSoup\CouchbaseMigrationsBundle\Command\RemoveBucketCommand:
-        class: BowlOfSoup\CouchbaseMigrationsBundle\Command\RemoveBucketCommand
-        arguments:
-        - '@BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory'
-        - %couchbase_migrations.user%
-        - %couchbase_migrations.password%
-        - %couchbase_migrations.bucket_default%
-        tags:
-        - { name: 'console.command' }
+  BowlOfSoup\CouchbaseMigrationsBundle\Command\RemoveBucketCommand:
+    class: BowlOfSoup\CouchbaseMigrationsBundle\Command\RemoveBucketCommand
+    arguments:
+      $clusterFactory: '@BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory'
+      $username: '%couchbase_migrations.user%'
+      $password: '%couchbase_migrations.password%'
+      $bucketName: '%couchbase_migrations.bucket_default%'
+    tags:
+      - { name: 'console.command' }
 
-    BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory:
-      class: BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory
-      arguments:
-        - '@BowlOfSoup\CouchbaseMigrationsBundle\Model\ConnectionSettings'
-        - %couchbase_migrations.bucket_default%
+  BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory:
+    class: BowlOfSoup\CouchbaseMigrationsBundle\Factory\ClusterFactory
+    arguments:
+      $connectionSettings: '@BowlOfSoup\CouchbaseMigrationsBundle\Model\ConnectionSettings'
+      $defaultBucketName: '%couchbase_migrations.bucket_default%'
 
-    BowlOfSoup\CouchbaseMigrationsBundle\Model\ConnectionSettings:
-      class: BowlOfSoup\CouchbaseMigrationsBundle\Model\ConnectionSettings
-      arguments:
-        - %couchbase_migrations.host%
-        - %couchbase_migrations.user%
-        - %couchbase_migrations.password%
+  BowlOfSoup\CouchbaseMigrationsBundle\Model\ConnectionSettings:
+    class: BowlOfSoup\CouchbaseMigrationsBundle\Model\ConnectionSettings
+    arguments:
+      $host: '%couchbase_migrations.host%'
+      $user: '%couchbase_migrations.user%'
+      $password: '%couchbase_migrations.password%'
+      $port: '%couchbase_migrations.port%'
